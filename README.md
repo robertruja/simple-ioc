@@ -1,2 +1,2 @@
-# simple-ioc
+# crumbs
 simple java ioc framework
