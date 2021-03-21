@@ -1,4 +1,4 @@
-package com.gigi.crumbs.context;
+package org.crumbs.core.context;
 
 import java.io.File;
 import java.io.IOException;

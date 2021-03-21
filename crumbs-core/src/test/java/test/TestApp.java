@@ -1,9 +1,9 @@
-package com.gigi.test;
+package test;
 
-import com.gigi.crumbs.annotation.CrumbsApplication;
-import com.gigi.crumbs.context.CrumbsApp;
-import com.gigi.crumbs.context.CrumbsContext;
-import com.gigi.crumbs.logging.Logger;
+import org.crumbs.core.annotation.CrumbsApplication;
+import org.crumbs.core.context.CrumbsApp;
+import org.crumbs.core.context.CrumbsContext;
+import org.crumbs.core.logging.Logger;
 import org.junit.Test;
 
 @CrumbsApplication

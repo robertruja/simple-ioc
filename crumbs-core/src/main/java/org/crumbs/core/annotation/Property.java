@@ -1,4 +1,4 @@
-package com.gigi.crumbs.annotation;
+package org.crumbs.core.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

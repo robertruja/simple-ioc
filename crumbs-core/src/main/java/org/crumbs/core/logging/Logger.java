@@ -1,4 +1,4 @@
-package com.gigi.crumbs.logging;
+package org.crumbs.core.logging;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

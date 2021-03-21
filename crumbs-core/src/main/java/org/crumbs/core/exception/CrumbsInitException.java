@@ -1,4 +1,4 @@
-package com.gigi.crumbs.exception;
+package org.crumbs.core.exception;
 
 public class CrumbsInitException extends RuntimeException {
     public CrumbsInitException(String message) {

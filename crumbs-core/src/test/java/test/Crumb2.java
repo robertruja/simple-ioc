@@ -1,7 +1,7 @@
-package com.gigi.test;
+package test;
 
-import com.gigi.crumbs.annotation.Crumb;
-import com.gigi.crumbs.annotation.CrumbRef;
+import org.crumbs.core.annotation.Crumb;
+import org.crumbs.core.annotation.CrumbRef;
 
 @Crumb
 public class Crumb2 {

@@ -1,6 +1,6 @@
-package com.gigi.crumbs.context;
+package org.crumbs.core.context;
 
-import com.gigi.crumbs.annotation.CrumbsApplication;
+import org.crumbs.core.annotation.CrumbsApplication;
 
 import java.util.Arrays;
 

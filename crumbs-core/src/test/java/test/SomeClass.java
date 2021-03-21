@@ -1,4 +1,4 @@
-package com.gigi.test;
+package test;
 
 public class SomeClass {
 }

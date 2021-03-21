@@ -1,7 +1,7 @@
-package com.gigi.test;
+package test;
 
-import com.gigi.crumbs.annotation.Crumb;
-import com.gigi.crumbs.annotation.Property;
+import org.crumbs.core.annotation.Crumb;
+import org.crumbs.core.annotation.Property;
 
 import java.time.Duration;
 

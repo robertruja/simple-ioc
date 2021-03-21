@@ -1,10 +1,10 @@
-package com.gigi.crumbs.context;
+package org.crumbs.core.context;
 
-import com.gigi.crumbs.annotation.Crumb;
-import com.gigi.crumbs.annotation.CrumbRef;
-import com.gigi.crumbs.annotation.Property;
-import com.gigi.crumbs.exception.CrumbsInitException;
-import com.gigi.crumbs.logging.Logger;
+import org.crumbs.core.annotation.Crumb;
+import org.crumbs.core.annotation.CrumbRef;
+import org.crumbs.core.annotation.Property;
+import org.crumbs.core.exception.CrumbsInitException;
+import org.crumbs.core.logging.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
