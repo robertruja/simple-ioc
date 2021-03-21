@@ -41,4 +41,9 @@ public class TestApp {
         logger.info(crumbWithProperties.getSomeLong());
         logger.debug("Should not be visible");
     }
+
+    @Test
+    public void shouldCallInitCode() {
+        CrumbsContext context = CrumbsApp.run(TestApp.class);
+    }
 }

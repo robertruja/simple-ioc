@@ -1,10 +1,11 @@
 package org.crumbs.core.context;
 
-import org.crumbs.core.annotation.Crumb;
-import org.crumbs.core.annotation.CrumbRef;
-import org.crumbs.core.annotation.Property;
 import org.crumbs.core.exception.CrumbsInitException;
 import org.crumbs.core.logging.Logger;
+import org.crumbs.core.annotation.Crumb;
+import org.crumbs.core.annotation.CrumbInit;
+import org.crumbs.core.annotation.CrumbRef;
+import org.crumbs.core.annotation.Property;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,56 +25,73 @@ public class CrumbsContext {
         LOGGER.info("Starting Crumbs Context ...");
         long start = System.currentTimeMillis();
         loadProperties();
+        loadCrumbs("org.crumbs");
         loadCrumbs(clazz);
         injectReferences();
         if (properties != null) {
             injectProperties();
         }
+        initCrumbs();
         LOGGER.info("Crumbs context initialized in {} millis", System.currentTimeMillis() - start);
     }
 
+    private void initCrumbs() {
+        crumbs.values().forEach(crumb -> Arrays.stream(crumb.getClass().getDeclaredMethods()).forEach(method -> {
+            Arrays.stream(method.getAnnotations())
+                    .filter(annotation -> annotation.annotationType().equals(CrumbInit.class))
+                    .findFirst()
+                    .ifPresent(ann -> {
+                        method.setAccessible(true);
+                        try {
+                            method.invoke(crumb);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            throw new CrumbsInitException("Failed to call init methods on crumb "
+                                    + crumb.getClass().getCanonicalName(), e);
+                        }
+                    });
+        }));
+    }
+
     private void injectProperties() {
-        crumbs.values().forEach(crumb -> {
-            Arrays.stream(crumb.getClass().getDeclaredFields()).forEach(field -> {
-                Arrays.stream(field.getAnnotations())
-                        .filter(annotation -> annotation.annotationType().equals(Property.class))
-                        .findFirst()
-                        .ifPresent(annotation -> {
-                            field.setAccessible(true);
-                            Property property = field.getAnnotation(Property.class);
-                            String propertyKey = property.value();
-                            String value = properties.getProperty(propertyKey);
-                            try {
-                                Class type = field.getType();
-                                if (type.equals(String.class)) {
-                                    field.set(crumb, value);
-                                } else if (type.equals(Integer.class)) {
-                                    Integer intValue = Integer.parseInt(value);
-                                    field.set(crumb, intValue);
-                                } else if (type.equals(Long.class)) {
-                                    Long longValue = Long.parseLong(value);
-                                    field.set(crumb, longValue);
-                                } else if (type.equals(Double.class)) {
-                                    Double doubleValue = Double.parseDouble(value);
-                                    field.set(crumb, doubleValue);
-                                } else if (type.equals(Boolean.class)) {
-                                    Boolean boolValue = Boolean.parseBoolean(value);
-                                    field.set(crumb, boolValue);
-                                } else if (type.equals(Duration.class)) {
-                                    Duration duration = Duration.parse(value);
-                                    field.set(crumb, duration);
-                                } else {
-                                    throw new CrumbsInitException("Could not inject value in field " + field.getName() +
-                                            " of type " + type.getCanonicalName() + " in class "
-                                            + crumb.getClass().getCanonicalName() + ". Unsupported property type");
-                                }
-                                field.setAccessible(false);
-                            } catch (IllegalAccessException e) {
-                                throw new CrumbsInitException("Unable to set field value due to exception", e);
+        crumbs.values().forEach(crumb -> Arrays.stream(crumb.getClass().getDeclaredFields()).forEach(field -> {
+            Arrays.stream(field.getAnnotations())
+                    .filter(annotation -> annotation.annotationType().equals(Property.class))
+                    .findFirst()
+                    .ifPresent(annotation -> {
+                        field.setAccessible(true);
+                        Property property = field.getAnnotation(Property.class);
+                        String propertyKey = property.value();
+                        String value = properties.getProperty(propertyKey);
+                        try {
+                            Class type = field.getType();
+                            if (type.equals(String.class)) {
+                                field.set(crumb, value);
+                            } else if (type.equals(Integer.class)) {
+                                Integer intValue = Integer.parseInt(value);
+                                field.set(crumb, intValue);
+                            } else if (type.equals(Long.class)) {
+                                Long longValue = Long.parseLong(value);
+                                field.set(crumb, longValue);
+                            } else if (type.equals(Double.class)) {
+                                Double doubleValue = Double.parseDouble(value);
+                                field.set(crumb, doubleValue);
+                            } else if (type.equals(Boolean.class)) {
+                                Boolean boolValue = Boolean.parseBoolean(value);
+                                field.set(crumb, boolValue);
+                            } else if (type.equals(Duration.class)) {
+                                Duration duration = Duration.parse(value);
+                                field.set(crumb, duration);
+                            } else {
+                                throw new CrumbsInitException("Could not inject value in field " + field.getName() +
+                                        " of type " + type.getCanonicalName() + " in class "
+                                        + crumb.getClass().getCanonicalName() + ". Unsupported property type");
                             }
-                        });
-            });
-        });
+                            field.setAccessible(false);
+                        } catch (IllegalAccessException e) {
+                            throw new CrumbsInitException("Unable to set field value due to exception", e);
+                        }
+                    });
+        }));
     }
 
     public <T> T getCrumb(Class<T> clazz) {
@@ -105,7 +123,10 @@ public class CrumbsContext {
 
     private void loadCrumbs(Class<?> clazz) {
         String packageName = clazz.getPackage().getName();
+        loadCrumbs(packageName);
+    }
 
+    private void loadCrumbs(String packageName) {
         Set<Class<?>> scannedCrumbs;
         try {
             scannedCrumbs = Arrays.stream(Scanner.getClasses(packageName))
