@@ -1,2 +1,2 @@
 # crumbs
-simple java ioc framework
+simple java DI framework
