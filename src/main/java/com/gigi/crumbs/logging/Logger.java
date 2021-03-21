@@ -5,57 +5,49 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Logger<T> {
+public class Logger {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-    private static final String PATTERN = "%T [%L] %C %M";
+    private static final String PATTERN = "%T [%L] %C - %M";
 
-    private static Level level;
-    private Class<T> clazz;
+    private static Level level = Level.valueOf(System.getProperty("log.level", "INFO"));
+    private Class<?> clazz;
     private Date date = new Date();
 
-    private Logger(Class<T> clazz) {
+    private <T> Logger(Class<T> clazz) {
         this.clazz = clazz;
     }
 
-    public static <U> Logger<U> getLogger(Class<U> clazz) {
-        return getLogger(clazz, Level.INFO);
+    public static <U> Logger getLogger(Class<U> clazz) {
+        return new Logger(clazz);
     }
 
-    public static <U> Logger<U> getLogger(Class<U> clazz, Level level) {
-        return new Logger<>(clazz);
-    }
-
-    public static void setLevel(Level level) {
-        Logger.level = level;
-    }
-
-    public void debug(String message) {
-        log(Level.DEBUG, message);
+    public void debug(Object message) {
+        log(Level.DEBUG, message.toString());
     }
 
     public void debug(String message, Object... args) {
         log(Level.DEBUG, message, args);
     }
 
-    public void info(String message) {
-        log(Level.INFO, message);
+    public void info(Object message) {
+        log(Level.INFO, message.toString());
     }
 
     public void info(String message, Object... args) {
         log(Level.INFO, message, args);
     }
 
-    public void warn(String message) {
-        log(Level.WARN, message);
+    public void warn(Object message) {
+        log(Level.WARN, message.toString());
     }
 
     public void warn(String message, Object... args) {
         log(Level.WARN, message, args);
     }
 
-    public void error(String message) {
-        log(Level.ERROR, message);
+    public void error(Object message) {
+        log(Level.ERROR, message.toString());
     }
 
     public void error(String message, Object... args) {
@@ -86,7 +78,7 @@ public class Logger<T> {
     private String formatMessage(String message, Object... args) {
         String formatted = message;
         for(Object arg: args) {
-            formatted = formatted.replace("{}", arg.toString());
+            formatted = formatted.replaceFirst("\\{}", arg.toString());
         }
         return formatted;
     }

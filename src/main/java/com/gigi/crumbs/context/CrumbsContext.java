@@ -3,6 +3,7 @@ package com.gigi.crumbs.context;
 import com.gigi.crumbs.annotation.Crumb;
 import com.gigi.crumbs.annotation.CrumbRef;
 import com.gigi.crumbs.annotation.Property;
+import com.gigi.crumbs.logging.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,17 +14,21 @@ import java.util.stream.Collectors;
 
 public class CrumbsContext {
 
+    private static final Logger LOGGER = Logger.getLogger(CrumbsContext.class);
+
     private final Map<Class<?>, Object> crumbs = new HashMap<>();
     private Properties properties;
 
-    public void initialize(Class<?> clazz) {
+    void initialize(Class<?> clazz) {
+        LOGGER.info("Starting Crumbs Context ...");
+        long start = System.currentTimeMillis();
         loadProperties();
         loadCrumbs(clazz);
         injectReferences();
         if (properties != null) {
             injectProperties();
         }
-        System.out.println("[CrumbsContext] Initialized");
+        LOGGER.info("Crumbs context initialized in {} millis", System.currentTimeMillis() - start);
     }
 
     private void injectProperties() {
@@ -122,7 +127,7 @@ public class CrumbsContext {
                 properties.load(propertiesStream);
             }
         } catch (IOException e) {
-
+            LOGGER.warn("No crumbs properties found in classpath");
         }
     }
 }
