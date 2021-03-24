@@ -11,7 +11,11 @@ public class CrumbsApp {
             throw new RuntimeException("Class is not @CrumbsApplication annotated");
         }
         CrumbsContext context = new CrumbsContext();
-        context.initialize(clazz);
+        try {
+            context.initialize(clazz);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to initialize Crumbs Context due to exception", e);
+        }
         return context;
     }
 }

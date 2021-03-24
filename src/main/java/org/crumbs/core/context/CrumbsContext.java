@@ -21,7 +21,7 @@ public class CrumbsContext {
     private final Map<Class<?>, Object> crumbs = new HashMap<>();
     private Properties properties;
 
-    void initialize(Class<?> clazz) {
+    void initialize(Class<?> clazz) throws Exception {
         LOGGER.info("Starting Crumbs Context ...");
         long start = System.currentTimeMillis();
         loadProperties();
@@ -121,19 +121,19 @@ public class CrumbsContext {
         });
     }
 
-    private void loadCrumbs(Class<?> clazz) {
+    private void loadCrumbs(Class<?> clazz) throws Exception {
         String packageName = clazz.getPackage().getName();
         loadCrumbs(packageName);
     }
 
-    private void loadCrumbs(String packageName) {
+    private void loadCrumbs(String packageName) throws Exception {
         Set<Class<?>> scannedCrumbs;
         try {
-            scannedCrumbs = Arrays.stream(Scanner.getClasses(packageName))
+            scannedCrumbs = Scanner.getClassesInPackage(packageName).stream()
                     .filter(scannedClazz -> Arrays.stream(scannedClazz.getAnnotations())
                             .anyMatch(annotation -> annotation.annotationType().equals(Crumb.class)))
                     .collect(Collectors.toSet());
-        } catch (ClassNotFoundException | IOException e) {
+        } catch (Exception e) {
             throw new CrumbsInitException("Error occurred on load classes", e);
         }
 
