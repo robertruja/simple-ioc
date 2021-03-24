@@ -62,6 +62,7 @@ public class CrumbsContext {
                         Property property = field.getAnnotation(Property.class);
                         String propertyKey = property.value();
                         String value = properties.getProperty(propertyKey);
+                        value = System.getProperty(propertyKey, value);
                         try {
                             Class type = field.getType();
                             if (type.equals(String.class)) {
