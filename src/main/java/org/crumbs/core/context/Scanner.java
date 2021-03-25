@@ -29,6 +29,9 @@ public class Scanner {
                 allClasses.addAll(findClassesInDir(new File(url.getFile()), packageName));
             } else {
                 String jarPath = path.substring(6, path.lastIndexOf("!"));
+                if(!isWindows()){
+                    jarPath = "/" + jarPath;
+                }
                 allClasses.addAll(findClassesInJar(jarPath));
             }
         }
@@ -72,5 +75,9 @@ public class Scanner {
             }
             return classes;
         }
+    }
+
+    private static boolean isWindows() {
+        return System.getProperty("os.name").startsWith("Windows");
     }
 }
