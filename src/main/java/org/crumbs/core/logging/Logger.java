@@ -23,7 +23,7 @@ public class Logger {
         this.clazz = clazz;
         String packageName = clazz.getPackage().getName();
         if(!packages.isEmpty()) {
-            active = Arrays.stream(packages.split(","))
+            active = packageName.startsWith("org.crumbs") || Arrays.stream(packages.split(","))
                     .anyMatch(packageName::startsWith);
         }
     }
