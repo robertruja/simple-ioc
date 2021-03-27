@@ -23,4 +23,11 @@ public class TestConfRef {
 
         Assert.assertEquals("prefix_sys-some-test_suffix", props.get("test.ref"));
     }
+
+    @Test
+    public void TestConfRefNoSuffix() {
+        Map<String, String> props = ConfigLoader.loadProperties();
+
+        Assert.assertEquals("prefixsome-test", props.get("test.ref2"));
+    }
 }
