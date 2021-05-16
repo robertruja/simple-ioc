@@ -1,10 +1,11 @@
 package test;
 
 import org.crumbs.core.context.ConfigLoader;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Map;
+
+import static org.junit.Assert.*;
 
 public class TestConfRef {
 
@@ -12,7 +13,7 @@ public class TestConfRef {
     public void TestConfRef() {
         Map<String, String> props = ConfigLoader.loadProperties();
 
-        Assert.assertEquals("prefix_some-test_suffix", props.get("test.ref"));
+        assertEquals("prefix_some-test_suffix", props.get("test.ref"));
     }
 
     @Test
@@ -21,13 +22,22 @@ public class TestConfRef {
 
         Map<String, String> props = ConfigLoader.loadProperties();
 
-        Assert.assertEquals("prefix_sys-some-test_suffix", props.get("test.ref"));
+        assertEquals("prefix_sys-some-test_suffix", props.get("test.ref"));
     }
 
     @Test
     public void TestConfRefNoSuffix() {
         Map<String, String> props = ConfigLoader.loadProperties();
 
-        Assert.assertEquals("prefixsome-test", props.get("test.ref2"));
+        assertEquals("prefixsome-test", props.get("test.ref2"));
+    }
+
+    @Test
+    public void TestConfPropertiesFromSystem() {
+        System.setProperty("non.existent", "test");
+        Map<String, String> props = ConfigLoader.loadProperties();
+
+        assertEquals("prefixsome-test", props.get("test.ref2"));
+        assertEquals("test", props.get("non.existent"));
     }
 }

@@ -5,7 +5,6 @@ import org.crumbs.core.logging.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -24,8 +23,12 @@ public class ConfigLoader {
                 Map<String, String> propertiesMap = properties.keySet().stream()
                         .map(Object::toString)
                         .collect(Collectors.toMap(key -> key, properties::getProperty));
-                return Collections.unmodifiableMap(
-                        replaceValues(propertiesMap));
+                Map<String, String> replaced = replaceValues(propertiesMap);
+                replaced.putAll(System.getProperties().keySet().stream()
+                        .map(Object::toString)
+                        .collect(Collectors.toMap(key -> key, System::getProperty)
+                ));
+                return Collections.unmodifiableMap(replaced);
             }
         } catch (IOException e) {
             LOGGER.warn("No crumbs properties found in classpath");
